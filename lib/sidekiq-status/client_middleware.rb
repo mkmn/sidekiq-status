@@ -34,7 +34,7 @@ module Sidekiq::Status
         initial_metadata = {
           jid: msg['jid'],
           status: :queued,
-          worker: Sidekiq::Job.new(msg, queue).display_class,
+          worker: Sidekiq::JobRecord.new(msg, queue).display_class,
           args: display_args(msg, queue)
         }
         store_for_id msg['jid'], initial_metadata, job_class.new.expiration || @expiration, redis_pool
@@ -45,7 +45,7 @@ module Sidekiq::Status
     end
 
     def display_args(msg, queue)
-      job = Sidekiq::Job.new(msg, queue)
+      job = Sidekiq::JobRecord.new(msg, queue)
       return job.display_args.to_a.empty? ? nil : job.display_args.to_json
     rescue Exception => e
       # For Sidekiq ~> 2.7
